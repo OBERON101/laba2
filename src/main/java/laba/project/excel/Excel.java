@@ -26,7 +26,7 @@ public class Excel {
   public Excel() {}
 
   public Import ImportFromFile(String filename, int sheetNumber)
-      throws WrongException {
+          throws WrongException {
     initImportWorkbook(filename);
     Import data = fillDataObject(sheetNumber);
     try {
@@ -52,14 +52,14 @@ public class Excel {
     }
     return sheetNames;
   }
-  
+
   private void initImportWorkbook(String filename)
-      throws WrongException {
+          throws WrongException {
     try {
       fis = new FileInputStream(filename);
       this.wb = new XSSFWorkbook(fis);
     } catch (NullPointerException e) {
-      throw new WrongException("Excel file is not choosen");
+      throw new WrongException("Excel file is not chosen");
     } catch (Exception e) {
       throw new WrongException(e.getMessage());
     }
@@ -69,11 +69,11 @@ public class Excel {
     Import data = new Import();
     try {
       XSSFSheet sheet = wb.getSheetAt(sheetNumber);
-      int num_rows = sheet.getPhysicalNumberOfRows();
-      double[] xArray = new double[num_rows - 1];
-      double[] yArray = new double[num_rows - 1];
-      double[] zArray = new double[num_rows - 1];
-      for (int i = 1; i < num_rows; i++) {
+      int numRows = sheet.getPhysicalNumberOfRows();
+      double[] xArray = new double[numRows - 1];
+      double[] yArray = new double[numRows - 1];
+      double[] zArray = new double[numRows - 1];
+      for (int i = 1; i < numRows; i++) {
         xArray[i - 1] = sheet.getRow(i).getCell(0).getNumericCellValue();
         yArray[i - 1] = sheet.getRow(i).getCell(1).getNumericCellValue();
         zArray[i - 1] = sheet.getRow(i).getCell(2).getNumericCellValue();
@@ -83,21 +83,21 @@ public class Excel {
       data.setzArray(zArray);
     } catch (Exception e) {
       System.out.println(e.getMessage());
-      throw new WrongException("Something wrong with choosen file");
+      throw new WrongException("Something wrong with chosen file");
     }
 
     return data;
   }
 
   public void ExportToFile(String folder, Import data)
-      throws WrongException {
+          throws WrongException {
     Compute calc = new Compute();
     try {
       initExportWorkbook(folder);
       fillCommonSheet(calc, "X", data.getxArray());
       fillCommonSheet(calc, "Y", data.getyArray());
       fillCommonSheet(calc, "Z", data.getzArray());
-      fillCovarienceSheet(calc, data);
+      fillCovarianceSheet(calc, data);
       wb.write(fos);
       wb.close();
       fos.close();
@@ -124,10 +124,10 @@ public class Excel {
     }
   }
 
-  private void fillCovarienceSheet(Compute calc, Import data) {
+  private void fillCovarianceSheet(Compute calc, Import data) {
     XSSFSheet sheet = wb.createSheet("Covariance");
     ArrayList<Issue> res =
-        calc.calcCov(data.getxArray(), data.getyArray(), data.getzArray());
+            calc.calcCov(data.getxArray(), data.getyArray(), data.getzArray());
     int rownum = 0;
     Row row;
     Cell cell;
@@ -142,17 +142,17 @@ public class Excel {
   }
 
   private void initExportWorkbook(String folder)
-      throws WrongException {
+          throws WrongException {
     try {
       fos = new FileOutputStream(FilenameUtils.concat(folder, exportName));
       this.wb = new XSSFWorkbook();
     } catch (NullPointerException e) {
-      throw new WrongException("Excel file is not choosen");
+      throw new WrongException("Excel file is not chosen");
     } catch (SecurityException e) {
       throw new WrongException("Write permission error");
     } catch (FileNotFoundException e) {
       throw new WrongException("Something wrong with output file: " +
-                                        e.getMessage());
+              e.getMessage());
     } catch (Exception e) {
       throw new WrongException(e.getMessage());
     }
